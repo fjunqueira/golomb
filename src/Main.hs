@@ -7,7 +7,7 @@ import Control.Monad (when, liftM2, unless, join)
 import qualified Data.ByteString as B
 import Data.Word
 import Encoder
--- import Decoder
+import Decoder
 import Text.Printf
 import Data.List.Split
 
@@ -34,7 +34,7 @@ decodify arguments = do
 
   encodedContent <- B.readFile $ inputFile args
 
-  putStr $ codeToChar getAlphabet <$> ([0]::[Int])-- (B.unpack encodedContent)
+  putStr $ codeToChar getAlphabet <$> decode (B.unpack encodedContent) (m args)
 
 codify :: [String] -> IO ()
 codify arguments = do
@@ -50,10 +50,12 @@ codify arguments = do
 
   let encodedContent = encode codeAlphabet (m args)
 
+  let sizes = encodedSizeInBits (m args) <$> codeAlphabet
+
   B.writeFile (outputFile args) $ B.pack encodedContent
 
   putStrLn "Character -> Encoding Map\n"
-  print $ zip contents $ encodeToString codeAlphabet (m args)
+  print $ prettyFormat contents sizes (join $ fmap (\word -> printf "%08b" word ::String) encodedContent)
   putStrLn ""
 
   putStrLn "Original text (in hex)\n"

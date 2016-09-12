@@ -7,22 +7,26 @@ import Text.Printf
 import Data.List.Split
 import Data.Maybe
 import Control.Monad
-import Debug.Trace
 
 encode :: [Int] -> Int -> [Word8]
-encode codes m = toWords $ encodedCodes ++ replicate size '0'
+encode codes m = toWords encodedCodes
   where encodedCodes = encodeToString codes m
-        size = 8 - length encodedCodes `mod` 8
 
 encodeToString :: [Int] -> Int -> String
 encodeToString [] _ = []
 encodeToString (code:rest) m =
-  replicate q '0' ++ "1" ++ remainderCode ++ encodeToString rest m
+  replicate q '1' ++ "0" ++ remainderCode ++ encodeToString rest m
   where (q,r) = code `divMod` m
         b = ceiling . logBase 2 $ fromIntegral m
         remainderCode
           | r < ((2 ^ b) - m) = printf ("%0"++ show (b - 1) ++ "b") r::String
           | otherwise = (printf ("%0"++ show b ++ "b") $ r + (2 ^ b) - m)::String
+
+encodedSizeInBits :: Int -> Int -> Int
+encodedSizeInBits code m = q + restLength + 1
+  where (q,r) = code `divMod` m
+        b = ceiling . logBase 2 $ fromIntegral m
+        restLength = if r < ((2 ^ b) - m) then b - 1 else b
 
 toWords :: String -> [Word8]
 toWords encoded =

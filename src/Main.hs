@@ -48,10 +48,9 @@ codify arguments = do
 
   let codeAlphabet = charToCode getAlphabet <$> contents
 
-  putStrLn $ show (m args)
   let encodedContent = encode codeAlphabet (m args)
-  print encodedContent
-  let sizes = encodedSizeInBits (m args) <$> codeAlphabet
+
+  let sizes = map ((\x -> length . encodeToString x $ m args) . (: [])) codeAlphabet
 
   B.writeFile (outputFile args) $ B.pack encodedContent
 

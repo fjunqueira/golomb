@@ -10,10 +10,12 @@ decode bytes = decodeUntilEmpty (decodeToString bytes)
 
 decodeUntilEmpty :: String -> Int -> [Int]
 decodeUntilEmpty [] _ = []
-decodeUntilEmpty bits m =
-  bitStringToInt m bitsToTake (take bitsToTake rest) : decodeUntilEmpty (drop bitsToTake rest) m
-  where (ones, rest) = span (/= '0') . dropWhile (=='0') $ bits
-        bitsToTake = length ones
+decodeUntilEmpty bits m
+   | length bits < 8 && '1' `notElem` bits = []
+   | otherwise = bitStringToInt m q (take k (drop 1 rest)) : decodeUntilEmpty (drop k (drop 1 rest)) m
+  where (ones, rest) = span (/= '0') bits
+        q = length ones
+        k = ceiling . logBase 2 $ fromIntegral m
 
 decodeToString :: [Word8] -> String
 decodeToString bytes =
@@ -23,10 +25,5 @@ decodeToString bytes =
 bitStringToInt :: Int -> Int -> String -> Int
 bitStringToInt m q code = q * m + r
 --remove duplicate
-  where r = foldl xor 0 . (\bits -> zip (reverse [0..(length bits - 1)]) bits >>= (\(idx,bit) -> return $ bitToWord bit idx)) $ code
-
---remove duplicate
-bitToWord :: Char -> Int -> Int
-bitToWord bit index
-  | bit == '1' = 0 `setBit` index
-  | otherwise = 0
+  where r = foldl xor 0 . (trueBits >=> (\(idx,chr) -> return $ bit idx)) $ code
+        trueBits bits = filter (\x ->'1' == snd x) . zip (reverse [0..(length bits - 1)]) $ bits

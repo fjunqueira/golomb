@@ -9,8 +9,10 @@ import Data.Maybe
 import Control.Monad
 
 encode :: [Int] -> Int -> [Word8]
-encode codes m = toWords encodedCodes
+encode codes m = toWords $ encodedCodes ++ replicate complement '0'
   where encodedCodes = encodeToString codes m
+        missingBits = length encodedCodes `mod` 8
+        complement = if missingBits > 0 then 8 - missingBits else 0
 
 encodeToString :: [Int] -> Int -> String
 encodeToString [] _ = []
@@ -18,9 +20,7 @@ encodeToString (code:rest) m =
   replicate q '1' ++ "0" ++ remainderCode ++ encodeToString rest m
   where (q,r) = code `divMod` m
         b = ceiling . logBase 2 $ fromIntegral m
-        remainderCode
-          | r < ((2 ^ b) - m) = printf ("%0"++ show (b - 1) ++ "b") r::String
-          | otherwise = (printf ("%0"++ show b ++ "b") $ r + (2 ^ b) - m)::String
+        remainderCode = printf ("%0"++ show b ++ "b") r::String
 
 encodedSizeInBits :: Int -> Int -> Int
 encodedSizeInBits code m = q + restLength + 1

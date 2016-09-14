@@ -7,6 +7,7 @@ import Text.Printf
 import Data.List.Split
 import Data.Maybe
 import Control.Monad
+import Common
 
 encode :: [Int] -> Int -> [Word8]
 encode codes m = toWords $ encodedCodes ++ replicate complement '0'
@@ -19,22 +20,13 @@ encodeToString [] _ = []
 encodeToString (code:rest) m =
   replicate q '1' ++ "0" ++ remainderCode ++ encodeToString rest m
   where (q,r) = code `divMod` m
-        b = ceiling . logBase 2 $ fromIntegral m
-        remainderCode = printf ("%0"++ show b ++ "b") r::String
+        k = ceiling . logBase 2 $ fromIntegral m
+        remainderCode = printf ("%0"++ show k ++ "b") r::String
 
 encodedSizeInBits :: Int -> Int -> Int
-encodedSizeInBits code m = q + restLength + 1
-  where (q,r) = code `divMod` m
-        b = ceiling . logBase 2 $ fromIntegral m
-        restLength = if r < ((2 ^ b) - m) then b - 1 else b
+encodedSizeInBits code m = q + k + 1
+  where (q,_) = code `divMod` m
+        k = ceiling . logBase 2 $ fromIntegral m
 
 toWords :: String -> [Word8]
-toWords encoded =
-   map (foldl xor 0 .
-      (\bits -> zip (reverse [0..(length bits - 1)]) bits >>= (\(idx,bit) -> return $ bitToWord bit idx)))
-      (chunksOf 8 encoded)
-
-bitToWord :: Char -> Int -> Word8
-bitToWord bit index
-  | bit == '1' = 0 `setBit` index
-  | otherwise = 0
+toWords encoded = map bitStringToWord $ chunksOf 8 encoded

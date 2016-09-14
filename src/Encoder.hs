@@ -23,10 +23,5 @@ encodeToString (code:rest) m =
         k = ceiling . logBase 2 $ fromIntegral m
         remainderCode = printf ("%0"++ show k ++ "b") r::String
 
-encodedSizeInBits :: Int -> Int -> Int
-encodedSizeInBits code m = q + k + 1
-  where (q,_) = code `divMod` m
-        k = ceiling . logBase 2 $ fromIntegral m
-
 toWords :: String -> [Word8]
 toWords encoded = map bitStringToWord $ chunksOf 8 encoded

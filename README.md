@@ -6,5 +6,5 @@ A [Golomb coding](https://en.wikipedia.org/wiki/Golomb_coding) implementation i 
 
 ```
 golomb encode --input FILENAME --output FILENAME --m INTEGER
-golomb decode --input FILENAME --m INTEGER"
+golomb decode --input FILENAME --m INTEGER
 ```

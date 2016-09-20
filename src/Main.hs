@@ -59,11 +59,11 @@ codify arguments = do
   putStrLn ""
 
   putStrLn "Original text (in hex)\n"
-  print $ fmap (\word -> printf "0x%08x " word ::String) contents
+  print $ fmap (\word -> printf "0x%08x" word ::String) contents
   putStrLn $ "\n Length (in bytes): " ++ show (length contents) ++ "\n"
 
   putStrLn "Encoded text (in hex)\n"
-  print $ fmap (\word -> printf "0x%08x " word ::String) encodedContent
+  print $ fmap (\word -> printf "0x%08x" word ::String) encodedContent
   putStrLn $ "\n Length (in bytes): " ++ show (length encodedContent) ++ "\n"
 
 prettyFormat :: String -> [Int] -> String -> [(Char,String)]
@@ -71,7 +71,7 @@ prettyFormat [] _ _ = []
 prettyFormat (y:ys) (x:xs) binaryString = (y,take x binaryString) : prettyFormat ys xs (drop x binaryString)
 
 getAlphabet :: [(Char,Int)]
-getAlphabet = zip (['\r','\n',' ','.','!','?',','] ++ ['a'..'z']) [1..]
+getAlphabet = zip (['\r','\n',' ','.','!','?',','] ++ ['a'..'z']) [0..]
 
 charToCode :: [(Char,Int)] -> Char -> Int
 charToCode alphabet char = let (_,code) = tryGetCode . filter (\(element,_) -> char == element) $ alphabet in code

@@ -71,7 +71,7 @@ prettyFormat [] _ _ = []
 prettyFormat (y:ys) (x:xs) binaryString = (y,take x binaryString) : prettyFormat ys xs (drop x binaryString)
 
 getAlphabet :: [(Char,Int)]
-getAlphabet = zip (['\r','\n',' ','.','!','?',','] ++ ['a'..'z']) [0..]
+getAlphabet = zip (['\n',' ','.','!','?',','] ++ ['a'..'z']) [0..]
 
 charToCode :: [(Char,Int)] -> Char -> Int
 charToCode alphabet char = let (_,code) = tryGetCode . filter (\(element,_) -> char == element) $ alphabet in code

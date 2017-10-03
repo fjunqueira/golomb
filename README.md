@@ -2,7 +2,7 @@
 
 A [Golomb coding](https://en.wikipedia.org/wiki/Golomb_coding) implementation i made for college
 
-##Usage:
+## Usage:
 
 ```
 golomb encode --input FILENAME --output FILENAME --m INTEGER
